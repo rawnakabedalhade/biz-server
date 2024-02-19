@@ -12,6 +12,7 @@ import { createUser } from "../model/dbAdapter.js";
 import { generateToken } from "../token/jwt.js";
 import isLockoutExpired from "../utils/isLockOutExpired.js";
 import updateUserFailedLoginInfo from "../utils/updateUserFailedLoginInfo.js";
+import nodemailer from "nodemailer";
 
 const loginController = async (req, res) => {
   try {
@@ -46,6 +47,35 @@ const loginController = async (req, res) => {
       isAdmin: user.isAdmin,
       isBusiness: user.isBusiness,
     });
+    const tramsporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "rawnakabedalhade@gmail.com",
+        pass: "yfjyjvlaxnpqmsax",
+      },
+    });
+    const mailOptions = {
+      from: "rawnakabedalhade@gmail.com",
+      to: user.email,
+      subject: "nodemailer notification",
+      text: "Welcome back to our website ,your login is successful",
+      html: `
+    <div style="font-family: Arial, sans-serif; color: #333; background-color: #f5f5f5; padding: 20px;">
+      <h2 style="color: #007bff;">Welcom back ${
+        user.name.first + " " + user.name.last
+      }</h2>
+      <p style="font-size: 16px;"> We look forward to serving you!</p>
+    </div>
+  `,
+    };
+    tramsporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent:" + info.response);
+      }
+    });
+
     res.json(token);
   } catch (err) {
     console.log(err);
@@ -64,6 +94,34 @@ const registerController = async (req, res) => {
     newUser.failedLoginAttempts = 0; // Reset failed login attempts count
     await updateUser(newUser._id, newUser);
     newUser.password = undefined;
+    const tramsporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "rawnakabedalhade@gmail.com",
+        pass: "yfjyjvlaxnpqmsax",
+      },
+    });
+    const mailOptions = {
+      from: "rawnakabedalhade@gmail.com",
+      to: newUser.email,
+      subject: "nodemailer notification",
+      text: "Your registeration is successful",
+      html: `
+    <div style="font-family: Arial, sans-serif; color: #333; background-color: #f5f5f5; padding: 20px;">
+      <h2 style="color: #007bff;">Your registration is successful ${
+        user.name.first + " " + user.name.last
+      }</h2>
+      <p style="font-size: 16px;">Thank you for registering with us. We look forward to serving you!</p>
+    </div>
+  `,
+    };
+    tramsporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error, "error from mailer");
+      } else {
+        console.log("Email sent:" + info.response);
+      }
+    });
     res.send("register User");
   } catch (err) {
     console.log(err);
