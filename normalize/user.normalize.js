@@ -1,6 +1,5 @@
 const normalizeUser = (user) => {
   let image = {};
-
   image = {
     ...user.image,
     url:

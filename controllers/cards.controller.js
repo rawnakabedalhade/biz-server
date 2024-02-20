@@ -9,6 +9,7 @@ import {
 } from "../model/dbAdapter.js";
 import checkUniqBizNumber from "../utils/checkUniqBizNumber.js";
 import handleError from "../utils/handleError.js";
+
 const getAllCardsController = async (req, res) => {
   try {
     let cards = await getAllCards();
@@ -50,7 +51,6 @@ const createCardController = async (req, res) => {
 const updateCardController = async (req, res) => {
   try {
     const cardFromDb = await getCardById(req.params.id);
-    console.log(cardFromDb);
     let { user_id } = cardFromDb;
     user_id = user_id + "";
     if (!cardFromDb) {
@@ -75,7 +75,6 @@ const deleteCardController = async (req, res) => {
       throw new Error("Card not found");
     }
     let { user_id } = cardFromDb;
-    console.log(req.userData._id);
     user_id = user_id + "";
     if (
       !req.userData.isAdmin &&

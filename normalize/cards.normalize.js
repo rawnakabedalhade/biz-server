@@ -1,5 +1,7 @@
 import generateUniqNumber from "../utils/generateUniqNumber.js";
+import debug from "debug";
 const normalizeCard = async (card) => {
+  const logger = debug("app:normalizeCard");
   try {
     let image = {};
     image = {
@@ -26,7 +28,9 @@ const normalizeCard = async (card) => {
       zip: card.zip || 0,
       bizNumber: card.bizNumber || (await generateUniqNumber()),
     };
-  } catch (err) {}
+  } catch (err) {
+    logger(err);
+  }
 };
 
 export default normalizeCard;

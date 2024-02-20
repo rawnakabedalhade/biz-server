@@ -5,6 +5,6 @@ const isLockoutExpired = (lastFailedLoginTimestamp) => {
   const lastFailedLoginTime = new Date(lastFailedLoginTimestamp).getTime();
 
   // Check if enough time has passed since the last failed login attempt
-  return currentTime - lastFailedLoginTime >= lockoutDurationMs;
+  return currentTime - lastFailedLoginTime >= lockoutDurationMs; //true -false
 };
 export default isLockoutExpired;

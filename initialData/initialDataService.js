@@ -1,5 +1,6 @@
 import { createCard, createUser } from "../model/dbAdapter.js";
 import generateUniqNumber from "../utils/generateUniqNumber.js";
+import debug from "debug";
 
 const initialUsers = async () => {
   let users = [
@@ -58,7 +59,8 @@ const initialUsers = async () => {
     }
     return bizId;
   } catch (err) {
-    // console.log(err);
+    let logger = debug("app:initialData");
+    logger("error from initialUser", err);
   }
 };
 
@@ -112,7 +114,8 @@ const initialCards = async (bizId) => {
       await createCard(card);
     }
   } catch (err) {
-    // console.log(err);
+    let logger = debug("app:initialData");
+    logger("error from initialCards", err);
   }
 };
 export { initialUsers, initialCards };

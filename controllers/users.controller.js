@@ -13,11 +13,11 @@ import { generateToken } from "../token/jwt.js";
 import isLockoutExpired from "../utils/isLockOutExpired.js";
 import updateUserFailedLoginInfo from "../utils/updateUserFailedLoginInfo.js";
 import nodemailer from "nodemailer";
+import debug from "debug";
 
 const loginController = async (req, res) => {
   try {
     let userFromDB = await getUserByEmail(req.body.email);
-    console.log(userFromDB);
     if (!userFromDB) {
       throw new Error("invalid email or password");
     }
@@ -41,7 +41,6 @@ const loginController = async (req, res) => {
     // Reset failed login attempts count upon successful login
     userFromDB.failedLoginAttempts = 0;
     let user = await updateUserFailedLoginInfo(userFromDB);
-    console.log(user, "user");
     let token = await generateToken({
       _id: user._id,
       isAdmin: user.isAdmin,
@@ -51,7 +50,7 @@ const loginController = async (req, res) => {
       service: "gmail",
       auth: {
         user: "rawnakabedalhade@gmail.com",
-        pass: "yfjyjvlaxnpqmsax",
+        pass: process.env.PASS_MAILER,
       },
     });
     const mailOptions = {
@@ -70,12 +69,12 @@ const loginController = async (req, res) => {
     };
     tramsporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        console.log(error);
+        let logger = debug("app:loginController");
+        logger("error sending email", error);
       } else {
         console.log("Email sent:" + info.response);
       }
     });
-
     res.json(token);
   } catch (err) {
     console.log(err);
@@ -98,7 +97,7 @@ const registerController = async (req, res) => {
       service: "gmail",
       auth: {
         user: "rawnakabedalhade@gmail.com",
-        pass: "yfjyjvlaxnpqmsax",
+        pass: process.env.PASS_MAILER,
       },
     });
     const mailOptions = {
@@ -109,7 +108,7 @@ const registerController = async (req, res) => {
       html: `
     <div style="font-family: Arial, sans-serif; color: #333; background-color: #f5f5f5; padding: 20px;">
       <h2 style="color: #007bff;">Your registration is successful ${
-        user.name.first + " " + user.name.last
+        newUser.name.first + " " + newUser.name.last
       }</h2>
       <p style="font-size: 16px;">Thank you for registering with us. We look forward to serving you!</p>
     </div>
@@ -117,7 +116,8 @@ const registerController = async (req, res) => {
     };
     tramsporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        console.log(error, "error from mailer");
+        let logger = debug("app:registerController");
+        logger("error sending email", error);
       } else {
         console.log("Email sent:" + info.response);
       }
@@ -133,7 +133,7 @@ const getAllUsersController = async (req, res) => {
     let users = await getAllUsers();
     res.json(users);
   } catch (err) {
-    console.log(err);
+    handleError(res, 400, err.message);
   }
 };
 
@@ -153,7 +153,6 @@ const updateUserController = async (req, res) => {
     userFromDB.password = undefined;
     res.json(userFromDB);
   } catch (err) {
-    console.log(err);
     handleError(res, 400, err.message);
   }
 };
