@@ -169,7 +169,8 @@ const deleteUserController = async (req, res) => {
 
 const patchIsBizController = async (req, res) => {
   try {
-    let userFromDB = await patchIsBiz(req.params.id, req.body.isBusiness);
+    let user = await getUserById(req.params.id);
+    let userFromDB = await patchIsBiz(req.params.id, !user.isBusiness);
     userFromDB.password = undefined;
     res.json(userFromDB);
   } catch (err) {

@@ -65,7 +65,6 @@ router.patch(
   authMiddleware,
   objectIdParamsValidationMiddleware,
   adminOrOwn,
-  bodyValidationMiddleWare(patchUserValidation),
   patchIsBizController
 );
 export default router;
